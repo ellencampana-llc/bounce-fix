@@ -347,6 +347,53 @@
     }
 
     .error-toast.visible { display: block; }
+
+    .sample-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .sample-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--red-light);
+      border: 1.5px solid var(--red-mid);
+      color: var(--red-dark);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 7px 13px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .sample-btn:hover {
+      background: var(--red-mid);
+      border-color: var(--red);
+      transform: scale(1.02);
+    }
+
+    .sample-btn:active { transform: scale(0.97); }
+
+    .sample-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--red-dark);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sample-counter {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
@@ -371,23 +418,31 @@
 
   <div class="messages" id="messages">
     <div class="msg ai">
-      <div class="msg-label">Bouncy</div>
+      <div class="msg-label">Ellen</div>
       <div class="bubble">Hi there! 👋 I'm here to help you make sense of bounced emails.
 
 Just paste in your bounce message or email content below, and I'll explain exactly what's happening in plain, straightforward English — no tech jargon needed.</div>
     </div>
-    <div class="typing-indicator" id="typingIndicator">
-      <div class="msg-label">Bouncy is thinking…</div>
-      <div class="typing-bubble">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
+  </div>
+
+  <div class="typing-indicator" id="typingIndicator">
+    <div class="msg-label">Ellen is thinking…</div>
+    <div class="typing-bubble">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
     </div>
   </div>
 
   <div class="input-area">
     <div class="error-toast" id="errorToast"></div>
+    <div class="sample-row">
+      <button class="sample-btn" id="sampleBtn">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+        Try a sample bounced email message
+      </button>
+      <span class="sample-counter" id="sampleCounter">1 of 10</span>
+    </div>
     <div class="input-row">
       <textarea
         id="userInput"
@@ -409,16 +464,98 @@ Just paste in your bounce message or email content below, and I'll explain exact
 
 <script>
   // ─── CONFIG ──────────────────────────────────────────────────────────────────
-  const API_URL = 'https://web-production-3767b.up.railway.app/chat';  // ← points to your local server
+  const API_URL = 'https://friendly-gentleness.up.railway.app/chat';
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const messagesEl = document.getElementById('messages');
-  const inputEl    = document.getElementById('userInput');
-  const sendBtn    = document.getElementById('sendBtn');
-  const typingEl   = document.getElementById('typingIndicator');
-  const errorToast = document.getElementById('errorToast');
+  const SAMPLES = [
+    `Delivery Status Notification (Failure)
+
+Your message wasn't delivered to john.smith@acmecorp.com because the address couldn't be found. Check for typos or unnecessary spaces and try again.
+
+Remote server response:
+550 5.1.1 The email account that you tried to reach does not exist. Please try double-checking the recipient's email address for typos or unnecessary spaces.`,
+
+    `This is an automated delivery status notification.
+
+Delivery to the following recipient has been delayed:
+  j.williams@oldcompany.net
+
+Technical details:
+452 4.2.2 Mailbox full — user is over quota. The server will retry delivery for 48 hours.`,
+
+    `Message rejected by remote host.
+
+Host: mx1.recipient-domain.com
+Error: 550 5.7.1 Your IP address 203.0.113.45 has been blocked by the Spamhaus Block List (SBL). 
+To request delisting visit: https://www.spamhaus.org/query/ip/203.0.113.45`,
+
+    `Delivery has failed to these recipients:
+  contact@newstartup.io
+
+DNS lookup failed. No MX records found for domain newstartup.io.
+The domain may not be configured to receive email.
+SMTP Error: 550 Host unknown.`,
+
+    `Final-Recipient: rfc822; sarah.jones@bigcorp.com
+Action: failed
+Status: 5.2.1
+Diagnostic-Code: smtp; 550 5.2.1 The email account that you tried to reach is disabled.`,
+
+    `Delivery to the following recipients failed permanently:
+  noreply@vendor.com
+
+Remote host said: 550 5.1.8 Email address blacklisted. The sending domain has been flagged for policy violations. Contact postmaster@vendor.com for assistance.`,
+
+    `Message could not be delivered.
+Recipient: ceo@targetcompany.org
+Reason: 421 4.7.0 Too many connections from your IP. Try again in 15 minutes.
+
+This is a temporary block. Your mail server attempted to open too many simultaneous connections.`,
+
+    `Delivery Status Notification
+
+This message was created automatically by the mail system.
+
+A message that you sent could not be delivered to one or more of its recipients. The following address failed:
+
+  info@closeddown.biz
+
+Reason: 550 5.1.2 Bad destination mailbox address. The domain closeddown.biz does not accept mail.`,
+
+    `Your message to marketing@bigretailer.com was rejected.
+
+550-5.7.26 This message does not have authentication information or fails to
+550-5.7.26 pass authentication checks (SPF and DKIM). To best protect our users
+550 5.7.26 from spam, the message has been blocked. See https://support.google.com/mail/answer/81126`,
+
+    `Undeliverable: Q3 Partnership Proposal
+
+The following message to <hr@enterprise.com> was undeliverable.
+The reasons for the problem:
+5.1.0 - Unknown address error 550-'5.7.606 Access denied, banned sending IP [198.51.100.22]. To request removal from this list please visit https://sender.office.com/ and follow the directions.'`
+  ];
+
+  let sampleIndex = 0;
+
+  const messagesEl    = document.getElementById('messages');
+  const inputEl       = document.getElementById('userInput');
+  const sendBtn       = document.getElementById('sendBtn');
+  const typingEl      = document.getElementById('typingIndicator');
+  const errorToast    = document.getElementById('errorToast');
+  const sampleBtn     = document.getElementById('sampleBtn');
+  const sampleCounter = document.getElementById('sampleCounter');
 
   const conversationHistory = [];
+
+  // Sample button — steps through samples and auto-sends
+  sampleBtn.addEventListener('click', () => {
+    inputEl.value = SAMPLES[sampleIndex];
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
+    sampleIndex = (sampleIndex + 1) % SAMPLES.length;
+    sampleCounter.textContent = `${sampleIndex + 1} of 10`;
+    sendMessage();
+  });
 
   inputEl.addEventListener('input', () => {
     inputEl.style.height = 'auto';
@@ -444,7 +581,7 @@ Just paste in your bounce message or email content below, and I'll explain exact
 
     const label = document.createElement('div');
     label.className = 'msg-label';
-    label.textContent = role === 'user' ? 'You' : 'Bouncy';
+    label.textContent = role === 'user' ? 'You' : 'Ellen';
 
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
@@ -457,9 +594,10 @@ Just paste in your bounce message or email content below, and I'll explain exact
     return bubble;
   }
 
-  function setTyping(visible, label = 'Bouncy is thinking…') {
+  function setTyping(visible, label = 'Ellen is thinking…') {
     typingEl.querySelector('.msg-label').textContent = label;
     typingEl.classList.toggle('visible', visible);
+    messagesEl.appendChild(typingEl);
     scrollToBottom();
   }
 
@@ -480,7 +618,7 @@ Just paste in your bounce message or email content below, and I'll explain exact
 
     appendMessage('user', text);
     conversationHistory.push({ role: 'user', content: text });
-    setTyping(true, 'Bouncy is thinking…');
+    setTyping(true, 'Ellen is thinking…');
 
     try {
       const response = await fetch(API_URL, {
