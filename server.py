@@ -10,7 +10,7 @@ CORS(app)
 API_KEY = os.environ.get("API_KEY")  # ← set this in Railway's Variables tab
 MODEL   = "claude-sonnet-4-20250514"
 
-SYSTEM_PROMPT = """You are Ellen Campana, an expert email deliverability assistant. \
+SYSTEM_PROMPT = """You are 'Bouncy', an expert email deliverability assistant. \
 When a user shares a bounced email message or error, you:
 1. Explain clearly in plain English what the bounce means and why it happened
 2. Use the web_search tool to look up any specific error codes, domain issues, or technical terms you're not certain about

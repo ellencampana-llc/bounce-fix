@@ -371,13 +371,13 @@
 
   <div class="messages" id="messages">
     <div class="msg ai">
-      <div class="msg-label">Ellen</div>
+      <div class="msg-label">Bouncy</div>
       <div class="bubble">Hi there! 👋 I'm here to help you make sense of bounced emails.
 
 Just paste in your bounce message or email content below, and I'll explain exactly what's happening in plain, straightforward English — no tech jargon needed.</div>
     </div>
     <div class="typing-indicator" id="typingIndicator">
-      <div class="msg-label">Ellen is thinking…</div>
+      <div class="msg-label">Bouncy is thinking…</div>
       <div class="typing-bubble">
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
@@ -444,7 +444,7 @@ Just paste in your bounce message or email content below, and I'll explain exact
 
     const label = document.createElement('div');
     label.className = 'msg-label';
-    label.textContent = role === 'user' ? 'You' : 'Ellen';
+    label.textContent = role === 'user' ? 'You' : 'Bouncy';
 
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
@@ -457,7 +457,7 @@ Just paste in your bounce message or email content below, and I'll explain exact
     return bubble;
   }
 
-  function setTyping(visible, label = 'Ellen is thinking…') {
+  function setTyping(visible, label = 'Bouncy is thinking…') {
     typingEl.querySelector('.msg-label').textContent = label;
     typingEl.classList.toggle('visible', visible);
     scrollToBottom();
@@ -480,7 +480,7 @@ Just paste in your bounce message or email content below, and I'll explain exact
 
     appendMessage('user', text);
     conversationHistory.push({ role: 'user', content: text });
-    setTyping(true, 'Ellen is thinking…');
+    setTyping(true, 'Bouncy is thinking…');
 
     try {
       const response = await fetch(API_URL, {
