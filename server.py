@@ -24,6 +24,9 @@ TOOLS = [
     }
 ]
 
+@app.route("/")
+def index():
+    return open("ellen-bounce-handler.html").read()
 
 @app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
