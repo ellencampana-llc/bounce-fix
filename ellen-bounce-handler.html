@@ -423,14 +423,14 @@
 
 Just paste in your bounce message or email content below, and I'll explain exactly what's happening in plain, straightforward English — no tech jargon needed.</div>
     </div>
-  </div>
 
-  <div class="typing-indicator" id="typingIndicator">
-    <div class="msg-label">Ellen is thinking…</div>
-    <div class="typing-bubble">
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="msg-label">Ellen is thinking…</div>
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
     </div>
   </div>
 
@@ -597,7 +597,6 @@ The reasons for the problem:
   function setTyping(visible, label = 'Ellen is thinking…') {
     typingEl.querySelector('.msg-label').textContent = label;
     typingEl.classList.toggle('visible', visible);
-    messagesEl.appendChild(typingEl);
     scrollToBottom();
   }
 
